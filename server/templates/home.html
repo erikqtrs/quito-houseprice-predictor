@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="card bg-dark" style="width: 100%; height: 100%; margin-top: 50px;">
+                <header class="card-header" style="text-align: center; color: white;">
+                    <h2>Quito House Price Predictor</h2>
+                </header>
+                <div class="card-body">
+                    <form method="post" id="form">
+                        <div class="row">
+                            <div class="col" style="font-size: 1.2em;; color:white;">
+                                <label for="">Location</label>
+                                <select class="form-control" name="location" id="location">
+                                    <option value="select">Select a Location</option>
+                                    {% for location in locations %}
+                                        <option value="{{location}}">{{location}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col" style="font-size: 1.2em;; color:white;">
+                                <label for="">Lot Area</label>
+                                <input class="form-control" type="text" name="lotarea" placeholder="Enter the lot area">
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 40px;">
+                            <div class="col" style="font-size: 1.2em;; color:white;">
+                                <label for="">House Area</label>
+                                <input type="tel" name="housearea" id="housearea" class="form-control"
+                                placeholder="Enter the house area">
+                            </div>
+                            <div class="col" style="font-size: 1.2em;; color:white;">
+                                <label for="">Bedrooms</label>
+                                <input class="form-control" type="text" name="bedrooms" placeholder="Enter the quantity of bedrooms">
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 40px;">
+                            <div class="col" style="font-size: 1.2em;; color:white;">
+                                <label for="">Bathrooms</label>
+                                <input type="tel" name="bathrooms" id="housearea" class="form-control"
+                                placeholder="Enter the quantity of bathrooms">
+                            </div>
+                            <div class="col" style="font-size: 1.2em;; color:white;"> 
+                                <label for="">Parking Spaces</label>
+                                <input class="form-control" type="text" name="parkingspaces" 
+                                placeholder="Enter the quantity of parking spaces">
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 30px;">
+                            <button 
+                                class="btn btn-primary" 
+                                style="font-size: 1.5em;"
+                                onclick="sendData()"
+                            >
+                                Predict Price
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <br>
+                <div class="result" style="margin-top: 40px;">
+                    <h3 class="prediction"> <span></span> </h3>
+                </div>
+                <div class="reset-button">
+                    <button class="btn btn-secondary reset">Reset Form</button>
+                </div>
+            </div> 
+        </div>
+        
+    </div>        
+    
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript">
+        
+        function handlerSubmit(event){
+            event.preventDefault();
+        }
+
+        function sendData() {
+            let form = document.getElementById('form')
+            
+            form.addEventListener('submit', handlerSubmit);
+
+            let prediction = document.querySelector('.prediction');
+            let data = new FormData(form);
+            
+            //AJAX
+            let http = new XMLHttpRequest();
+            http.open('POST', '/predict', true);
+            prediction.innerHTML = 'Wait Predicting Price!...';
+            http.onreadystatechange = function(){
+                if(http.readyState == XMLHttpRequest.DONE){
+                    prediction.innerHTML = 'Estimate price: $'+ http.responseText
+                }
+            };
+
+            http.onload = function(){};
+            http.send(data);
+        }
+    
+        document.querySelector('.reset').addEventListener('click', () => {
+            document.querySelector('#form').reset();
+        })        
+    </script>
+{% endblock %}
